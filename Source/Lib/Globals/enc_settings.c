@@ -296,13 +296,24 @@ EbErrorType svt_av1_verify_settings(SequenceControlSet *scs) {
         return_error = EB_ErrorBadParameter;
     }
 
+#if FIX_FPS_CALC
+    if (scs->frame_rate > 300) {
+#else
+    if (scs->frame_rate > (300 << 16)) {
+#endif
+        SVT_WARN(
+            "Instance %u: Frame rate is greater than 300 fps. Output might not play back correctly with some "
+            "players that use hardware decoding.\n",
+            channel_number + 1);
+    }
+
     // Check if the current input video is conformant with the Level constraint
 #if FIX_FPS_CALC
-    if (scs->frame_rate > 240) {
+    if (scs->frame_rate > 480) {
 #else
-    if (scs->frame_rate > (240 << 16)) {
+    if (scs->frame_rate > (480 << 16)) {
 #endif
-        SVT_ERROR("Instance %u: The maximum allowed frame rate is 240 fps\n", channel_number + 1);
+        SVT_ERROR("Instance %u: The maximum allowed frame rate is 480 fps\n", channel_number + 1);
         return_error = EB_ErrorBadParameter;
     }
     // Check that the frame_rate is non-zero
@@ -1016,6 +1027,11 @@ EbErrorType svt_av1_verify_settings(SequenceControlSet *scs) {
         return_error = EB_ErrorBadParameter;
     }
 
+    if (config->cdef_scaling < 1 || config->cdef_scaling > 30) {
+        SVT_ERROR("Instance %u: cdef-scaling must be between 1 and 30\n", channel_number + 1);
+        return_error = EB_ErrorBadParameter;
+    }
+
     return return_error;
 }
 
@@ -1193,6 +1209,7 @@ EbErrorType svt_av1_set_default_params(EbSvtAv1EncConfiguration *config_ptr) {
     config_ptr->tx_bias                    = 0;
     config_ptr->complex_hvs                = 0;
     config_ptr->noise_adaptive_filtering   = 2;
+    config_ptr->cdef_scaling               = 15;
     return return_error;
 }
 
@@ -1353,6 +1370,12 @@ void svt_av1_print_lib_params(SequenceControlSet *scs) {
 
         if (config->noise_norm_strength > 0) {
             SVT_INFO("SVT [config]: Noise Normalization Strength \t\t\t\t\t: %d\n", config->noise_norm_strength);
+        }
+
+        if (config->cdef_scaling != 15 && config->cdef_level != 0) {
+            SVT_INFO("SVT [config]: CDEF scaling (ratio) \t\t\t\t\t\t: %d (%.2fx)\n",
+                     config->cdef_scaling,
+                     config->cdef_scaling / 15.0);
         }
     }
 #if DEBUG_BUFFERS
@@ -2398,6 +2421,7 @@ EB_API EbErrorType svt_av1_enc_parse_parameter(EbSvtAv1EncConfiguration *config_
         {"tx-bias", &config_struct->tx_bias},
         {"complex-hvs", &config_struct->complex_hvs},
         {"noise-adaptive-filtering", &config_struct->noise_adaptive_filtering},
+        {"cdef-scaling", &config_struct->cdef_scaling},
     };
     const size_t uint8_opts_size = sizeof(uint8_opts) / sizeof(uint8_opts[0]);
 
