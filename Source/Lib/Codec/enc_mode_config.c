@@ -6358,14 +6358,14 @@ void svt_aom_sig_deriv_enc_dec_light_pd1(PictureControlSet *pcs, ModeDecisionCon
     set_mds0_controls(ctx, pcs->mds0_level);
     uint8_t lpd1_tx_level = 0;
     if (lpd1_level <= LPD1_LVL_2)
-        lpd1_tx_level = 3;
+        lpd1_tx_level = 0;
     else {
-        lpd1_tx_level = 4;
+        lpd1_tx_level = 0;
         if (!rtc_tune &&
             (((l0_was_skip && l1_was_skip && ref_skip_perc > 35) && me_8x8_cost_variance < (800 * picture_qp) &&
               me_64x64_distortion < (800 * picture_qp)) ||
              (me_8x8_cost_variance < (100 * picture_qp) && me_64x64_distortion < (100 * picture_qp))))
-            lpd1_tx_level = 6;
+            lpd1_tx_level = 0;
     }
     set_lpd1_tx_ctrls(ctx, lpd1_tx_level);
 
