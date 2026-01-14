@@ -6154,9 +6154,9 @@ void svt_aom_sig_deriv_enc_dec_light_pd0(SequenceControlSet *scs, PictureControl
             uint32_t fast_lambda = ctx->hbd_md ? ctx->fast_lambda_md[EB_10_BIT_MD] : ctx->fast_lambda_md[EB_8_BIT_MD];
             uint64_t cost_64x64  = RDCOST(fast_lambda, 0, ppcs->me_64x64_distortion[ctx->sb_index]);
 
-            intra_level = (cost_64x64 < use_intra_pd0_th) ? 0 : 1;
+            intra_level = (cost_64x64 < use_intra_pd0_th) ? 1 : 1;
         } else
-            intra_level = 0;
+            intra_level = 1;
     }
     set_intra_ctrls(pcs, ctx, intra_level, 2);
     if (pd0_level == VERY_LIGHT_PD0) {
