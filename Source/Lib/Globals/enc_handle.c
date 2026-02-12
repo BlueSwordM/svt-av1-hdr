@@ -3263,7 +3263,8 @@ static void derive_vq_params(SequenceControlSet* scs) {
         // Sharpness
         vq_ctrl->sharpness_ctrls.scene_transition = 1;
         vq_ctrl->sharpness_ctrls.tf               = 1;
-        vq_ctrl->sharpness_ctrls.unipred_bias     = 1;
+        //Temporarily disabling for tune VQ testing
+        vq_ctrl->sharpness_ctrls.unipred_bias     = 0;
         vq_ctrl->sharpness_ctrls.ifs              = 1;
         vq_ctrl->sharpness_ctrls.cdef             = 1;
         vq_ctrl->sharpness_ctrls.restoration      = 1;
