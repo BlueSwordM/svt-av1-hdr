@@ -1129,6 +1129,7 @@ static void svt_av1_optimize_b(PictureControlSet *pcs, ModeDecisionContext *ctx,
     }
 
     if (light_rdoq) {
+        sharpness = 1;
         rweight = 10;
     }
 
